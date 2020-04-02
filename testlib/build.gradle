@@ -4,15 +4,14 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'maven-publish'
+
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -40,13 +39,28 @@ android {
         }
         blue {
             dimension "color"
-            buildConfigField "boolean", "COLOR_FLAVOR", '"blue"'
+            buildConfigField "String", "COLOR_FLAVOR", '"blue"'
         }
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation project(':innerlib')
+    implementation project(":innerlib")
+
+//    implementation "com.cabbage.testsdk:innerlib:0.1.0-0"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            redRelease(MavenPublication) {
+                from components.redRelease
+
+                artifactId "testlib"
+                version "${versionMajor}.${versionMinor}.${versionPatch}-${versionBuild}"
+            }
+        }
+    }
 }
